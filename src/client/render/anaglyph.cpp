@@ -5,7 +5,7 @@ Copyright (C) 2017 numzero, Lobachevskiy Vitaliy <numzer0@yandex.ru>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
+the Free Software Foundation; either version 3.0 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "anaglyph.h"
 
+#include <irrlicht.h>
+
 void RenderingCoreAnaglyph::drawAll()
 {
 	renderBothImages();
@@ -31,7 +33,7 @@ void RenderingCoreAnaglyph::setupMaterial(int color_mask)
 {
 	video::SOverrideMaterial &mat = driver->getOverrideMaterial();
 	mat.Material.ColorMask = color_mask;
-	mat.EnableFlags = video::EMF_COLOR_MASK;
+	mat.EnableFlags |= video::EMF_COLOR_MASK;
 	mat.EnablePasses = scene::ESNRP_SKY_BOX | scene::ESNRP_SOLID |
 			   scene::ESNRP_TRANSPARENT | scene::ESNRP_TRANSPARENT_EFFECT |
 			   scene::ESNRP_SHADOW;
