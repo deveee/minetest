@@ -32,12 +32,17 @@ if(NOT (BUILD_CLIENT OR BUILD_SERVER))
 endif()
 
 option(USE_SDL "Use SDL2 for window management" FALSE)
+option(USE_STATIC_BUILD "Link additional libraries needed for static build" FALSE)
 
 if(USE_SDL)
-	find_package(SDL2)
+	if(NOT USE_STATIC_BUILD)
+		find_package(SDL2)
+	else()
+		set(SDL2_FOUND TRUE)
+	endif()
 	if (SDL2_FOUND)
 		message(STATUS "SDL2 found.")
-		include_directories(${SDL2_INCLUDEDIR})
+		include_directories(${SDL2_INCLUDE_DIRS})
 	else()
 		message(FATAL_ERROR "SDL2 not found.")
 	endif()
@@ -558,7 +563,6 @@ if(BUILD_CLIENT)
 		${JSON_LIBRARY}
 		${PLATFORM_LIBS}
 		${CLIENT_PLATFORM_LIBS}
-		${SDL2_LIBRARIES}
 	)
 	if(NOT USE_LUAJIT)
 		set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -568,6 +572,21 @@ if(BUILD_CLIENT)
 		)
 	endif()
 
+	if(USE_SDL)
+		target_link_libraries(
+			${PROJECT_NAME}
+			${SDL2_LIBRARIES}
+		)
+		if(USE_STATIC_BUILD AND WIN32)
+			target_link_libraries(
+				${PROJECT_NAME}
+				winmm
+				imm32
+				setupapi
+				opengl32
+			)
+		endif()
+	endif()
 	if(ENABLE_GLES)
 		target_link_libraries(
 			${PROJECT_NAME}
@@ -585,12 +604,23 @@ if(BUILD_CLIENT)
 			${PROJECT_NAME}
 			${GETTEXT_LIBRARY}
 		)
+		if(USE_STATIC_BUILD)
+			target_link_libraries(
+				${PROJECT_NAME}
+				${GETTEXT_ICONV_LIBRARY}
+			)
+		endif()
 	endif()
 	if(USE_CURL)
 		target_link_libraries(
 			${PROJECT_NAME}
 			${CURL_LIBRARY}
 		)
+		if(USE_STATIC_BUILD)
+			if(WIN32)
+				target_link_libraries(${PROJECT_NAME} bcrypt crypt32 ws2_32)
+			endif()
+		endif()
 	endif()
 	if(USE_FREETYPE)
 		if(FREETYPE_PKGCONFIG_FOUND)
