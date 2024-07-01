@@ -4,16 +4,27 @@
 
 export DEPS_ROOT=$(pwd)
 
-[ ! -d irrlicht-src ] && \
-	git clone --depth 1 -b SDL2 https://github.com/MoNTE48/Irrlicht irrlicht-src
+if [ ! -d irrlicht-src ]; then
+	wget https://downloads.sourceforge.net/irrlicht/irrlicht-1.8.5.zip
+	unzip irrlicht-1.8.5.zip
+	mv irrlicht-1.8.5 irrlicht-src
+	rm -f irrlicht-1.8.5.zip
+	cd irrlicht-src
+	git apply ../irrlicht.diff
+	cd ..
+fi
 
 cd irrlicht-src/source/Irrlicht
 
 CPPFLAGS="$CPPFLAGS \
-          -DNO_IRR_COMPILE_WITH_SDL_TEXTINPUT_ \
+          -DNO_IRR_USE_NON_SYSTEM_JPEG_LIB_ \
+          -DNO_IRR_USE_NON_SYSTEM_LIB_PNG_ \
+          -DNO_IRR_USE_NON_SYSTEM_ZLIB_ \
+          -DNO_IRR_COMPILE_WITH_BZIP2_ \
+          -DNO_IRR_COMPILE_WITH_MY3D_LOADER_ \
           -DNO_IRR_COMPILE_WITH_OGLES2_ \
           -DNO_IRR_COMPILE_WITH_DIRECT3D_9_ \
-          -I$DEPS_ROOT/sdl2/include \
+          -DNO_IRR_COMPILE_WITH_DIRECT3D_8_ \
           -I$DEPS_ROOT/zlib/include \
           -I$DEPS_ROOT/libjpeg/include \
           -I$DEPS_ROOT/libpng/include" \

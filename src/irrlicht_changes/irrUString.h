@@ -80,6 +80,9 @@ static const irr::u16 UTF16_LO_SURROGATE = 0xDC00;
 #define UTF16_IS_SURROGATE_HI(c)	(((c) & 0xFC00) == 0xD800)
 #define UTF16_IS_SURROGATE_LO(c)	(((c) & 0xFC00) == 0xDC00)
 
+#ifndef IRR_DEBUG_BREAK_IF
+#define IRR_DEBUG_BREAK_IF _IRR_DEBUG_BREAK_IF
+#endif
 
 namespace irr
 {
